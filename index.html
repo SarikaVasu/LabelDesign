@@ -211,8 +211,8 @@
             var image = $("#main-container");
             var getCanvas;
             $("#previewBtn").on('click', function() {
-                html2canvas(element, {
-                    onrendered: function(canvas) {
+                html2canvas(image, {
+                    onrender: function(canvas) {
                         $("#previewDisplay").append(canvas);
                         getCanvas = canvas;
                     }
