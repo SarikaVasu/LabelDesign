@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Design</title>
+    <script src= 
+    "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> 
+    </script> 
+    <script src= 
+    "https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"> 
+    </script>
+    <style>
+        #full-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;  
+            align-items: center;
+            justify-content: center;
+
+        }
+        #design {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #main-container {
+            position: relative; 
+            width: 500px;
+            height: 300px;
+            border: 2px solid grey;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1rem;
+            background-size: cover;
+            background-position: center;
+            background-image: url(bg.avif);
+        }
+        #bgImage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 500px;
+            height: 300px;
+            z-index: 1;
+        }
+        #controls {
+            height: 100%;
+            width: 100%;
+            flex-direction: column;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+        }
+        #details {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            height: 100%;
+        }
+        #image-container {
+            display: flex;
+            width: 30%;
+            height: 100%;
+            
+        }
+        #info-container {
+            display: flex;
+            width: 70%;
+            height: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        #textInp {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            background-color: red;
+            align-items: center;
+            justify-content: center;
+        }
+        #displayText {
+            display: flex;
+            position: absolute;
+            top: 15px;
+            font-weight:bolder ;
+            z-index: 3;
+        }
+        #fileInput {
+            display: flex;
+            width:100%;
+            align-items: center;
+            justify-content: center;
+            justify-self: center;
+        }
+        button {
+            height: 8%;
+            width: 15%;
+            margin: 0.5rem;
+        }
+        input {
+            padding-left: 10px;
+        }
+        #textBttn {
+            display: flex;
+            width: 100%;
+            height: 50%;
+            align-items: center;
+            justify-content: center;
+        }
+        #canvas {
+            position: absolute;
+            top: 90px;
+            left: 20px;
+            height: 130px;
+            width: 130px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-image: linear-gradient(to right, rgba(242, 135, 219, 0.641) 50%, rgba(20, 158, 186, 0.278) 50%);
+            box-shadow: 0 0 20px 10px rgba(104, 106, 107, 0.5) ;
+        }
+        #canvas-edit {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            height: 120px;
+            width: 120px;
+            border-radius: 50%;
+            background-image: url(sample_photo.png);
+            background-size: cover;
+            background-position: center;
+            border: 2px solid transparent;
+            box-shadow: 0 0 20px 10px rgba(135, 214, 230, 0.5);
+        }
+        
+        td {
+            font-weight: bolder;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        td:first-child {
+            font-weight: bolder;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="full-page">
+        <article id="design">
+            <span id="main-container">
+                <div id="details">
+                    <span id="image-container">
+                        <article id="canvas">
+                            <div id="canvas-edit"> 
+                            </div>
+                        </article>
+                    </span>
+                    <span id="info-container">
+                        <p id="displayText"></p>
+                        <table>
+                            <tr>
+                                <td>Std ______________ </td>
+                                <td>Sec ______________ </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Subject _______________________________ </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">School ____________________________________</td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+            </span>         
+        </article>
+        <article id="controls"> 
+            <span id="fileInput" >
+                <p>Choose Image for background:</p>
+                <input type="file" accept="image/*" onchange="bgImageUpload(event)">
+            </span>
+            <span id="fileInput">
+                <p>Choose Image for Photo:</p>
+                <input type="file" accept="image/*" onchange="imageUpload(event)">
+            </span>
+
+            <button id="cropBttn">Crop Image</button>
+            <button id="adjustBttn">Adjust Image</button>
+            <button id="mergeBttn">Merge Image</button>
+
+            <span class="textInp">
+                <label for="userTextInput">Enter your text: </label>
+                <input type="text" id="userTextInput" name="userTextInput">
+                <button id="textBttn" onclick="displayText()">Add Text</button>
+            </span>
+            <input id="previewBtn" type="button" value="Preview">
+            <a id="downloadBtn" href="#">Download</a>
+            <div id="previewDisplay"></div>
+        </article>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var image = $("#main-container");
+            var getCanvas;
+            $("#previewBtn").on('click', function() {
+                html2canvas(element, {
+                    onrendered: function(canvas) {
+                        $("#previewDisplay").append(canvas);
+                        getCanvas = canvas;
+                    }
+                })
+            })
+            $("#downloadBtn").on('click', function() {
+                var imageData = getCanvas.toDataURL("image/png");
+                var newData = imageData.replace(/^data:image\/png/, "data:application/octet-stream");
+                $("#downloadBtn").attr("download", "image.png").attr("href", newData);
+            })
+        })
+
+        function displayText() {
+            var userTextInput = document.getElementById("userTextInput").value;
+            console.log(userTextInput);
+            document.getElementById("displayText").innerHTML = userTextInput;
+            document.getElementById("displayText").style.color = "blue";
+            document.getElementById("displayText").style.fontSize = "25px";
+        }
+
+        function bgImageUpload(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+            reader.onload = new FileReader();
+            reader.onload = function(event) {
+                var imageURL = event.target.result;
+                document.getElementById("main-container").style.backgroundImage = "url('" + imageURL + "')";
+            }
+            reader.readAsDataURL(file);
+        }
+        
+        function imageUpload(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+            reader.onload = new FileReader();
+            reader.onload = function(event) {
+                var imageURL = event.target.result;
+                document.getElementById("canvas-edit").style.backgroundImage = "url('" + imageURL + "')";
+            }
+            reader.readAsDataURL(file);
+        }
+
+    </script>
+</body>
+</html>
